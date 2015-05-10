@@ -58,6 +58,25 @@ class StreamSpec extends Specification {
       Stream(1, 2, 3, 4, 5).forAll( _ != 3) must beFalse
     }
 
+    "map over numbers" in {
+      Stream(1, 2, 3, 4, 5).map( _ * 2).toList === List(10, 8, 6, 4, 2)
+    }
+
+    "filter even numbers" in {
+      Stream(1, 2, 3, 4, 5, 6).filter(_ % 2 == 0).toList === List(6, 4, 2)
+    }
+
+    "appends two streams" in {
+      Stream(1, 2, 3).append(Stream(4, 5, 6)).toList === List(6, 5, 4, 3, 2, 1)
+    }
+
+    "flat maps the stream" in {
+      Stream(1, 3 ,5).flatMap {
+        value =>
+          Stream(value, value + 1)
+      }.toList === List(6, 5, 4, 3, 2, 1)
+    }
+
   }
 
 }
