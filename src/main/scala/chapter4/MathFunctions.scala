@@ -41,8 +41,4 @@ object MathFunctions {
     map2(mkMatcher(pat1), mkMatcher(pat2)){ (a,b) => a(s) && b(s) }
   }
 
-  def sequence[A](a: List[Option[A]]): Option[List[A]] = {
-
-  }
-
 }

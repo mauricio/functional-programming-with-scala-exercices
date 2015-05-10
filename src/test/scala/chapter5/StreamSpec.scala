@@ -1,0 +1,63 @@
+package chapter5
+
+import org.specs2.mutable.Specification
+
+class StreamSpec extends Specification {
+
+  "streams" should {
+
+    "pull the head from a non-empty stream" in {
+      Stream(1, 2, 3).headOption.get === 1
+    }
+
+    "returns none for the head if the stream is empty" in {
+      Stream.empty[Int].headOption === None
+    }
+
+    "turn a stream into a list" in {
+      Stream(1, 2, 3).toList === List(3, 2, 1)
+    }
+
+    "take N elements from a stream" in {
+      Stream(1, 2, 3, 4).take(2).toList === List(2, 1)
+    }
+
+    "take more elements than the list has" in {
+      Stream(1, 2).take(3).toList === List(2, 1)
+    }
+
+    "take elements from an empty list" in {
+      Stream.empty[Int].take(5).toList must beEmpty
+    }
+
+    "drops N elements from the stream" in {
+      Stream(1, 2, 3).drop(2).toList === List(3)
+    }
+
+    "takes numbers while they're less than 3" in {
+      Stream(1, 2, 3, 4).takeWhile(_ < 3).toList === List(2, 1)
+    }
+
+    "does not take anything if the list is empty" in {
+      Stream.empty[Int].takeWhile(_ < 3).toList must beEmpty
+    }
+
+    "checks if an item exists" in {
+      Stream(1, 2, 3, 4, 5, 6, 7, 8 ).exists( _ == 6 ) must beTrue
+    }
+
+    "does not find a non-existing item" in {
+      Stream(1, 2, 3, 4, 5).exists( _ == 6) must beFalse
+    }
+
+    "for all returns true if all items match" in {
+      Stream(1, 2, 3, 4, 5).forAll( _ < 6) must beTrue
+    }
+
+    "for all returns false any of the items do not match" in {
+      Stream(1, 2, 3, 4, 5).forAll( _ != 3) must beFalse
+    }
+
+  }
+
+}
