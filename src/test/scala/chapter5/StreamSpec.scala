@@ -77,6 +77,18 @@ class StreamSpec extends Specification {
       }.toList === List(6, 5, 4, 3, 2, 1)
     }
 
+    "produces a sequence of the constant value" in {
+      Stream.constant(1).take(5).toList === List(1,1,1,1,1)
+    }
+
+    "produces a sequence of ever increasing numbers" in {
+      Stream.from(10).take(4).toList === List(13, 12, 11, 10)
+    }
+
+    "produces the fibbonaci sequence" in {
+      Stream.fibs().take(6).toList === List(8, 5, 3, 2, 1, 1)
+    }
+
   }
 
 }

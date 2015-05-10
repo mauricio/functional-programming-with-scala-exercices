@@ -76,4 +76,27 @@ object Stream {
   def apply[A](as: A*): Stream[A] =
     if (as.isEmpty) empty else cons(as.head, apply(as.tail: _*))
 
+  def constant[A](a : A) : Stream[A] =
+    cons(a, constant(a))
+
+  def from(n : Int) : Stream[Int] =
+    cons(n, from(n + 1))
+
+  def fibs() : Stream[Int] = {
+
+    def helper(first : Int, second : Int) : Stream[Int] = {
+      val next = first + second
+      cons(next, helper(second, next))
+    }
+
+    cons(1, helper(0, 1))
+  }
+
+  def unfold[A, S](z: S)(f: S => Option[(A, S)]): Stream[A] = {
+    f(z) match {
+      case Some((current, next)) => cons(current, unfold(next)(f))
+      case None => empty[A]
+    }
+  }
+
 }
