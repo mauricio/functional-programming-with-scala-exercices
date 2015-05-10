@@ -89,6 +89,18 @@ class StreamSpec extends Specification {
       Stream.fibs().take(6).toList === List(8, 5, 3, 2, 1, 1)
     }
 
+    "checks if a stream starts with some values" in {
+      Stream(1, 2, 3, 4).startsWith(Stream(1, 2)) must beTrue
+    }
+
+    "checks if a stream does not start with some values" in {
+      Stream(1, 2, 3, 4).startsWith(Stream(2, 3)) must beFalse
+    }
+
+    "works even when the prefix is bigger than the original" in {
+      Stream(1, 2).startsWith(Stream(1, 2, 3)) must beFalse
+    }
+
   }
 
 }
