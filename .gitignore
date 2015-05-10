@@ -2,3 +2,4 @@ funcional-programming-with-scala-exercises.iml
 project/*
 out/*
 target/*
+.idea/*
