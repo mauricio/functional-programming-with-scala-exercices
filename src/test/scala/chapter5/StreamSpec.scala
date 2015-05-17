@@ -101,6 +101,26 @@ class StreamSpec extends Specification {
       Stream(1, 2).startsWith(Stream(1, 2, 3)) must beFalse
     }
 
+    "zipAll with both streams about the same size" in {
+      Stream(1, 2, 3).zipAll(Stream(4, 5, 6)).toList === List((Some(3),Some(6)), (Some(2),Some(5)), (Some(1), Some(4)))
+    }
+
+    "zipAll with second stream smaller" in {
+      Stream(1, 2, 3).zipAll(Stream(4, 5)).toList === List((Some(3),None), (Some(2),Some(5)), (Some(1), Some(4)))
+    }
+
+    "zipAll with first stream smaller" in {
+      Stream(1, 2).zipAll(Stream(4, 5, 6)).toList === List((None,Some(6)), (Some(2),Some(5)), (Some(1), Some(4)))
+    }
+
+    "produce tails of the stream" in {
+      Stream(1, 2, 3).tails === Stream(Stream(1, 2, 3), Stream(2, 3), Stream(3))
+    }
+
+    "tails of an empty stream produces the empty stream" in {
+      Empty.tails === Empty
+    }
+
   }
 
 }
