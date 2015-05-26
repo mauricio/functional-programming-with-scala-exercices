@@ -4,14 +4,12 @@ import scala.annotation.tailrec
 
 trait RNG {
 
-  type Rand[+A] = RNG => (A, RNG)
-
-  def nextInt: (Int,RNG)
+  def nextInt: (Int, RNG)
 
   def nonNegativeInt(rng: RNG): (Int, RNG)
 
-  def double(rng: RNG): (Double, RNG) =
-    map(r => r.nextInt)(i => i.toDouble / Int.MaxValue)(rng)
+  def double(rng : RNG) : (Double,RNG) =
+    State.map(State[RNG,Int](r => r.nextInt))(i =>  i.toDouble / Int.MaxValue ).run(rng)
 
   def intDouble(rng: RNG): ((Int, Double), RNG)
 
@@ -19,33 +17,27 @@ trait RNG {
 
   def double3(rng: RNG): ((Double, Double, Double), RNG)
 
-  def unit[A](a: A): Rand[A] = rng => (a, rng)
+  def both[A, B](ra: State[RNG,A], rb: State[RNG,B]): State[RNG,(A, B)] = State.map2(ra, rb)((_, _))
 
-  def both[A,B](ra: Rand[A], rb: Rand[B]): Rand[(A,B)] = map2(ra, rb)((_, _))
+  val int: State[RNG,Int] = State(_.nextInt)
+  val randIntDouble: State[RNG,(Int, Double)] = both(int, State(double))
+  val randDoubleInt: State[RNG,(Double, Int)] = both(State(double), int)
 
-  val int: Rand[Int] = _.nextInt
-  val randIntDouble: Rand[(Int, Double)] = both(int, double)
-  val randDoubleInt: Rand[(Double, Int)] = both(double, int)
+  def nonNegativeEven: State[RNG,Int] = State.map(State(nonNegativeInt))(i => i - i % 2)
 
-  def map[A,B](s: Rand[A])(f: A => B): Rand[B] = rng => {
-    val (a, rng2) = s(rng)
-    (f(a), rng2)
-  }
+  def rollDie: State[RNG,Int] = nonNegativeLessThan(6)
 
-  def nonNegativeEven: Rand[Int] = map(nonNegativeInt)(i => i - i % 2)
-
-  def map2[A,B,C](ra: Rand[A], rb: Rand[B])(f: (A, B) => C): Rand[C] = rng => {
-    val ar = ra(rng)
-    val br = rb(ar._2)
-    f(ar._1, br._1) -> br._2
-  }
-
-  def sequence[A](fs: List[Rand[A]]): Rand[List[A]] = rng => {
-    fs.foldLeft(List[A]() -> rng)((acc,item) => {
-      val (result,next) = item(acc._2)
-      (result :: acc._1) -> next
+  def nonNegativeLessThan(n: Int): State[RNG,Int] =
+    State.flatMap(State(nonNegativeInt))({
+      i =>
+        val mod = i % n
+        if (i + (n-1) - mod >= 0) {
+          State(rng => { (n, rng) })
+        }
+        else {
+          nonNegativeLessThan(n)
+        }
     })
-  }
 
 }
 
